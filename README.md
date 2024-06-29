@@ -1,4 +1,4 @@
-# bequest ⏳
+# ⏳ bequest 
 A censorship resistant deadman's switch inspired by [killcord](https://killcord.io/).
 
 Bequest is a tool used to build resilient deadman's switches for releasing encrypted payloads. 
