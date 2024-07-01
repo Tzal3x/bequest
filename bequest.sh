@@ -21,10 +21,16 @@ function watch() {
 }
 
 function publish() {
+    echo "⌛️ Publishing secrets..."
     arg1=$1
     arg2=$2
     arg3=$3
-    echo "Template function called with arguments: $arg1, $arg2, $arg3"
+    sui client ptb \
+    --assign privateKey "\"$arg1\"" \
+    --assign resourcesUrl "\"$arg2\"" \
+    --assign releaseMessage "\"$arg3\"" \
+    --move-call $PACKAGE_ID::bequest::publish_secret @$ADMIN_CAP \
+    privateKey resourcesUrl releaseMessage
 }
 
 if [ $# -lt 1 ]; then
@@ -39,7 +45,6 @@ case "$1" in
         last
         ;;
     publish)
-        echo "Publishing secrets..."
         publish $2 $3 $4
         ;;
     watch)
