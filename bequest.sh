@@ -11,7 +11,19 @@ function usage() {
 }
 
 function init() {
-    contract/publish.sh
+    echo "Initializing Bequest contract..."
+    res=$(source ./contract/publish.sh)
+    if [ $? -ne 0 ]; then
+        echo "Error: Contract initialization failed."
+        exit 1
+    fi
+    export ADMIN_CAP=$(echo $res | grep ADMIN_CAP | awk '{print $2}')
+    export PACKAGE_ID=$(echo $res | grep PACKAGE_ID | awk '{print $2}')
+    export LAST_CHECKIN=$(echo $res | grep LAST_CHECKIN | awk '{print $2}')
+    echo "Contract published successfully ✔️"
+    echo "ADMIN_CAP: $ADMIN_CAP"
+    echo "PACKAGE_ID: $PACKAGE_ID"
+    echo "LAST_CHECKIN: $LAST_CHECKIN"
 }
 
 function checkin() {
