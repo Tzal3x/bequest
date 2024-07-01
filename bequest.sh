@@ -17,7 +17,26 @@ function last() {
 
 function watch() {
     echo "Observing LastCheckIn for admin inactivity..."
-    # Add your watch logic here
+    while true; do
+        lastCheckIn=$(last)
+
+        if [ $((1719838506000 - $(./bequest.sh last))) -gt $((1000)) ]; then
+            echo "Admin has been inactive for more than 15 days!"
+
+            defaultPrivateKey="defaultPrivateKeyValue"
+            defaultResourcesUrl="defaultResourcesUrlValue"
+            defaultReleaseMessage="defaultReleaseMessageValue"
+
+            privateKey=${X:-$defaultPrivateKey}
+            resourcesUrl=${Y:-$defaultResourcesUrl}
+            releaseMessage=${Z:-$defaultReleaseMessage}
+
+            publish $privateKey $resourcesUrl $releaseMessage
+            exit 0
+        fi
+        echo "Last check in on: $(date -r $lastCheckIn)"
+        sleep 5
+    done
 }
 
 function publish() {
@@ -25,6 +44,12 @@ function publish() {
     arg1=$1
     arg2=$2
     arg3=$3
+
+    if [ -z "$arg1" ] || [ -z "$arg2" ] || [ -z "$arg3" ]; then
+        echo "Error: All arguments (privateKey, resourcesUrl, releaseMessage) must be provided."
+        exit 1
+    fi
+
     sui client ptb \
     --assign privateKey "\"$arg1\"" \
     --assign resourcesUrl "\"$arg2\"" \
@@ -48,8 +73,7 @@ case "$1" in
         publish $2 $3 $4
         ;;
     watch)
-        echo "Running watch..."
-        # Add your watch logic here
+        watch
         ;;
     *)
         usage
