@@ -54,11 +54,6 @@ module bequest::bequest {
         last_check_in.timestamp_ms = clock.timestamp_ms()
     }
 
-    /// Get the
-    public fun last_check_in(last_check_in: &LastCheckIn): u64 {
-        last_check_in.timestamp_ms
-    }
-
     /// Should be called by the admin's external system.
     /// Use it when the admin has not checked in for at least X amount of time.
     /// Releases the secret to unlock the resources!
