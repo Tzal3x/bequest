@@ -2,5 +2,8 @@ build/
 .publish.json
 example_call.sh
 temp
+temp*.txt
+*.gpg
 *.swp
 target/
+*.log

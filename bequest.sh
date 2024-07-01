@@ -6,6 +6,7 @@ function usage() {
     echo "  checkin: Check in to the Bequest contract to reset the admin inactivity timer"
     echo "  last: Get the timestamp of the last checkin"
     echo "  publish: Publish the secret to the Bequest contract"
+    echo "  upload: Encrypt and upload a file to walrus."
     echo "  watch: Watch the Bequest contract for admin inactivity. If admin is inactive for more than 15 days, publish the secret."
     exit 1
 }
@@ -79,6 +80,17 @@ function publish() {
     privateKey resourcesUrl releaseMessage
 }
 
+function upload() {
+    arg1=$1
+    if [ -z "$arg1" ]; then
+        echo "Error: You need to provide a file to store."
+        exit 1
+    fi
+    gpg --symmetric $1
+    echo "Uploading file to walrus..."
+    walrus store $1.gpg >> file-uploads.log
+}
+
 if [ $# -lt 1 ]; then
     usage
 fi
@@ -89,6 +101,9 @@ case "$1" in
         ;;
     checkin)
         checkin
+        ;;
+    upload)
+        upload $2
         ;;
     last)
         last
