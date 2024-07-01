@@ -1,6 +1,7 @@
 use clap::{arg, Command};
 use spinners::{Spinner, Spinners};
 use std::ffi::OsString;
+use std::io::{self, Write};
 
 fn cli() -> Command {
     Command::new("bequest-cli")
@@ -34,7 +35,13 @@ fn main() {
 
     match matches.subcommand() {
         Some(("checkin", _)) => {
-            println!("Checking in ... ✅",);
+            print!("Checking in... ");
+            io::stdout().flush().unwrap();
+            std::thread::sleep(std::time::Duration::from_secs(2));
+            
+            check_in();
+            println!("✔️");
+            println!("Digest: {}", "TODO");
         }
         Some(("watch", sub_matches)) => {
             let secret = sub_matches.get_one::<String>("secret").expect("required");
