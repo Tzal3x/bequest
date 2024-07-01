@@ -2,11 +2,16 @@
 function usage() {
     echo "Bequest - A censorship resistant deadman's switch built on Sui"
     echo "Usage: $0 {checkin|last|publish|watch}"
+    echo "  init: Initialize the Bequest contract"
     echo "  checkin: Check in to the Bequest contract to reset the admin inactivity timer"
     echo "  last: Get the timestamp of the last checkin"
     echo "  publish: Publish the secret to the Bequest contract"
     echo "  watch: Watch the Bequest contract for admin inactivity. If admin is inactive for more than 15 days, publish the secret."
     exit 1
+}
+
+function init() {
+    contract/publish.sh
 }
 
 function checkin() {
@@ -67,6 +72,9 @@ if [ $# -lt 1 ]; then
 fi
 
 case "$1" in
+    init)
+        init
+        ;;
     checkin)
         checkin
         ;;
