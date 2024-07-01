@@ -1,8 +1,21 @@
+use anyhow::anyhow;
 use clap::{arg, Command};
+use move_core_types::language_storage::StructTag;
 use spinners::{Spinner, Spinners};
 use std::ffi::OsString;
 use std::io::{self, Write};
-use sui_sdk::SuiClientBuilder;
+use sui_config::{sui_config_dir, SUI_CLIENT_CONFIG};
+use sui_sdk::rpc_types::{SuiObjectDataFilter, SuiObjectResponseQuery};
+use sui_sdk::types::base_types::{ObjectID, SuiAddress};
+use sui_sdk::types::programmable_transaction_builder::ProgrammableTransactionBuilder;
+use sui_sdk::types::transaction::Argument;
+use sui_sdk::types::{
+    transaction::{Command as SuiCommand, ProgrammableMoveCall},
+    Identifier,
+};
+use sui_sdk::types::{SUI_FRAMEWORK_ADDRESS, SUI_FRAMEWORK_PACKAGE_ID};
+use sui_sdk::wallet_context::WalletContext;
+use sui_sdk::{SuiClient, SuiClientBuilder};
 
 fn cli() -> Command {
     Command::new("bequest-cli")
@@ -43,7 +56,8 @@ async fn main() -> Result<(), anyhow::Error> {
             io::stdout().flush().unwrap();
             std::thread::sleep(std::time::Duration::from_secs(2));
 
-            check_in();
+            check_in(&sui_testnet).await?;
+
             println!("✔️");
             println!("Digest: {}", "TODO");
             Ok(())
@@ -77,7 +91,7 @@ async fn main() -> Result<(), anyhow::Error> {
             }
             Ok(())
         }
-        Some(("publish", sub_matches)) => {
+        Some(("publish", _sub_matches)) => {
             // TODO
             Ok(())
         }
@@ -97,7 +111,48 @@ async fn main() -> Result<(), anyhow::Error> {
 }
 
 // fn get_last_checkin() {}
-
-fn check_in() {}
-
 // fn publish_secret() {}
+
+async fn check_in(client: &SuiClient) -> Result<(), anyhow::Error> {
+    let mut ptb = ProgrammableTransactionBuilder::new();
+    let pkg_id = "0xd3fa6db65bc351c9d8dfcd0b04c06f37d87829cc0664505499fd7d3ae8670057";
+    let package = ObjectID::from_hex_literal(pkg_id).map_err(|e| anyhow!(e))?;
+    let module = Identifier::new("bequest").map_err(|e| anyhow!(e))?;
+    let function = Identifier::new("check_in").map_err(|e| anyhow!(e))?;
+
+    // let adminCap = ptb.obj(ObjectArg::ImmOrOwnedObject());
+
+    ptb.command(SuiCommand::MoveCall(Box::new(ProgrammableMoveCall {
+        package,
+        module,
+        function,
+        type_arguments: vec![], // object, pure,
+        arguments: vec![Argument::Input(0)],
+    })));
+
+    let builder = ptb.finish();
+    Ok(()) // TODO return a string with the digest
+}
+
+async fn get_object(client: &SuiClient) -> Result<(), anyhow::Error> {
+    let wallet_context = WalletContext::new(&sui_config_dir()?.join(SUI_CLIENT_CONFIG), None, None);
+    let owner_addr: SuiAddress = wallet_context?.active_address()?;
+    let owned_objects = client
+        .read_api()
+        .get_owned_objects(
+            owner_addr,
+            Some(SuiObjectResponseQuery {
+                filter: Some(SuiObjectDataFilter::StructType(StructTag {
+                    address: ,
+                    module: ,
+                    name: ,
+                    type_params: vec![type_tag],
+                })),
+                options: None,
+            }),
+            None,
+            None,
+        )
+        .await?;
+    Ok(())
+}
