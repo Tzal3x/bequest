@@ -18,7 +18,7 @@ module bequest::bequest {
         id: UID,
         privateKey: String,
         resourcesUrl: String,
-        releaseMessage: Option<String>
+        releaseMessage: String
     }
 
     /// The last time the admin checked in to the contract.
@@ -58,7 +58,7 @@ module bequest::bequest {
     /// Use it when the admin has not checked in for at least X amount of time.
     /// Releases the secret to unlock the resources!
     public fun publish_secret(_admin_cap: &AdminCap,
-                              privateKey: String, resourcesUrl: String, releaseMessage: Option<String>,
+                              privateKey: String, resourcesUrl: String, releaseMessage: String,
                               ctx: &mut TxContext) {
         transfer::transfer({
             SecretToPublish {
