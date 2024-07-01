@@ -2,6 +2,7 @@ use clap::{arg, Command};
 use spinners::{Spinner, Spinners};
 use std::ffi::OsString;
 use std::io::{self, Write};
+use sui_sdk::SuiClientBuilder;
 
 fn cli() -> Command {
     Command::new("bequest-cli")
@@ -30,18 +31,22 @@ fn cli() -> Command {
         )
 }
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<(), anyhow::Error> {
+    let sui_testnet = SuiClientBuilder::default().build_testnet().await?;
     let matches = cli().get_matches();
+    println!("Sui testnet version: {}", sui_testnet.api_version());
 
     match matches.subcommand() {
         Some(("checkin", _)) => {
             print!("Checking in... ");
             io::stdout().flush().unwrap();
             std::thread::sleep(std::time::Duration::from_secs(2));
-            
+
             check_in();
             println!("✔️");
             println!("Digest: {}", "TODO");
+            Ok(())
         }
         Some(("watch", sub_matches)) => {
             let secret = sub_matches.get_one::<String>("secret").expect("required");
@@ -70,9 +75,11 @@ fn main() {
                 }
                 std::thread::sleep(std::time::Duration::from_secs(5));
             }
+            Ok(())
         }
         Some(("publish", sub_matches)) => {
             // TODO
+            Ok(())
         }
         Some((ext, sub_matches)) => {
             let args = sub_matches
@@ -81,6 +88,7 @@ fn main() {
                 .flatten()
                 .collect::<Vec<_>>();
             println!("Calling out to {ext:?} with {args:?}");
+            Ok(())
         }
         _ => unreachable!(), // If all subcommands are defined above, anything else is unreachable!()
     }
@@ -88,8 +96,8 @@ fn main() {
     // Continued program logic goes here...
 }
 
-fn get_last_checkin() {}
+// fn get_last_checkin() {}
 
 fn check_in() {}
 
-fn publish_secret() {}
+// fn publish_secret() {}
