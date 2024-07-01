@@ -1,4 +1,5 @@
 use clap::{arg, Command};
+use spinners::{Spinner, Spinners};
 use std::ffi::OsString;
 
 fn cli() -> Command {
@@ -43,21 +44,24 @@ fn main() {
             let release_message = sub_matches
                 .get_one::<String>("release_message")
                 .expect("required");
-
             loop {
-                // Simulate fetching the LastCheckIn object and checking the timestamp
-                println!("Fetching LastCheckIn object ...");
+                let mut sp = Spinner::new(
+                    Spinners::TimeTravel,
+                    "Monitoring the LastCheckIn timestamp to detect admin inactivity...".into(),
+                );
                 // Placeholder for actual logic to check the admin's last active timestamp
                 let inactivity_threshold = 15;
                 let admin_inactive_days = 10; // Placeholder value
                 if admin_inactive_days > inactivity_threshold {
-                    println!("Admin has been inactive for more than 7 days. Publishing secret...");
+                    sp.stop();
+                    println!("☠️");
+                    println!("Admin is inactive for too long!!! Publishing secret...");
                     println!("Secret: {}", secret);
                     println!("Resources URL: {}", resources_url);
                     println!("Release Message: {}", release_message);
                     break;
                 }
-                
+                std::thread::sleep(std::time::Duration::from_secs(5));
             }
         }
         Some(("publish", sub_matches)) => {
