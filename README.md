@@ -22,7 +22,7 @@ Use the following command to get some sui for the faucet in order for the follow
 Create a new bequest:
 
 ```bash
-chmod u+x bequest.sh
+chmod u+x bequest.sh && source bequest.sh
 ```
 
 This will create a new bequest smart contract and set some environment variables.
