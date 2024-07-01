@@ -2,6 +2,10 @@
 function usage() {
     echo "Bequest - A censorship resistant deadman's switch built on Sui"
     echo "Usage: $0 {checkin|last|publish|watch}"
+    echo "  checkin: Check in to the Bequest contract to reset the admin inactivity timer"
+    echo "  last: Get the timestamp of the last checkin"
+    echo "  publish: Publish the secret to the Bequest contract"
+    echo "  watch: Watch the Bequest contract for admin inactivity. If admin is inactive for more than 15 days, publish the secret."
     exit 1
 }
 
@@ -20,22 +24,22 @@ function watch() {
     while true; do
         lastCheckIn=$(last)
 
-        if [ $((1719838506000 - $(./bequest.sh last))) -gt $((1000)) ]; then
+        if [ $(($(echo "$(date +%s)000") - $(./bequest.sh last))) -gt $((15 * 24 * 60 * 60 * 1000)) ]; then
             echo "Admin has been inactive for more than 15 days!"
 
             defaultPrivateKey="defaultPrivateKeyValue"
             defaultResourcesUrl="defaultResourcesUrlValue"
             defaultReleaseMessage="defaultReleaseMessageValue"
 
-            privateKey=${X:-$defaultPrivateKey}
-            resourcesUrl=${Y:-$defaultResourcesUrl}
-            releaseMessage=${Z:-$defaultReleaseMessage}
+            privateKey=${PRIVATE_KEY:-$defaultPrivateKey}
+            resourcesUrl=${RESOURCES_URL:-$defaultResourcesUrl}
+            releaseMessage=${RELEASE_MESSAGE:-$defaultReleaseMessage}
 
             publish $privateKey $resourcesUrl $releaseMessage
             exit 0
         fi
-        echo "Last check in on: $(date -r $lastCheckIn)"
-        sleep 5
+        echo "Last check was on: $lastCheckIn"
+        sleep 10
     done
 }
 
