@@ -3,3 +3,4 @@ build/
 example_call.sh
 temp
 *.swp
+target/
