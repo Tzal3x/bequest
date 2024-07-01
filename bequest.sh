@@ -112,7 +112,7 @@ case "$1" in
         publish $2 $3 $4
         ;;
     watch)
-        watch
+        watch $2 $3 $4
         ;;
     *)
         usage
