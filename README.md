@@ -19,8 +19,6 @@ Use the following command to get some sui for the faucet in order for the follow
 
 ## Usage
 
-Create a new bequest:
-
 ### Example
 
 You decide to create a bequest: You need to upload a file to a decentralized censorship resinstant store like walrus.
